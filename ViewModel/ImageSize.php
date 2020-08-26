@@ -36,8 +36,10 @@ class ImageSize implements ArgumentInterface
 
     private function getPubDirectory(): DirectoryReadInterface
     {
-        return !$this->pubDirectory
-            ? $this->filesystem->getDirectoryRead(DirectoryList::PUB)
-            : $this->pubDirectory;
+        if (!$this->pubDirectory) {
+            $this->pubDirectory = $this->filesystem->getDirectoryRead(DirectoryList::PUB);
+        }
+
+        return $this->pubDirectory;
     }
 }
