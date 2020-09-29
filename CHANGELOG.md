@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## [Unreleased]
+* Added category image size view model
 
 ## [1.0.1] 2020-05-29
 * Removed invalid enter in changelog file
