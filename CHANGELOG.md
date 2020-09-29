@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## [Unreleased]
+
+## [1.1.0] 2020-09-29
 * Added category image size view model
 
 ## [1.0.1] 2020-05-29
