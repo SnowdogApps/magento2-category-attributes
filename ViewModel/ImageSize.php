@@ -15,7 +15,7 @@ class ImageSize implements ArgumentInterface
     /**
      * @var DirectoryReadInterface
      */
-    private $pubDirectory;
+    private $mediaDirectory;
 
     public function __construct(Filesystem $filesystem)
     {
@@ -24,22 +24,23 @@ class ImageSize implements ArgumentInterface
 
     public function get(CategoryInterface $category): ?array
     {
-        if (!$category->getImage() || !$this->getPubDirectory()->isReadable($category->getImage())) {
+        if (!$category->getImage() || !$this->getMediaDirectory()->isReadable()) {
             return null;
         }
 
-        $imagePath = $this->getPubDirectory()->getAbsolutePath($category->getImage());
+	    $catImagePath = '/catalog/category/';
+	    $imagePath = $this->mediaDirectory->getAbsolutePath($catImagePath.$category->getImage());
         [$width, $height] = getimagesize($imagePath);
 
         return $width ? ['width' => $width, 'height' => $height] : null;
     }
 
-    private function getPubDirectory(): DirectoryReadInterface
+    private function getMediaDirectory(): DirectoryReadInterface
     {
-        if (!$this->pubDirectory) {
-            $this->pubDirectory = $this->filesystem->getDirectoryRead(DirectoryList::PUB);
+	    if (!$this->mediaDirectory) {
+		    $this->mediaDirectory = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
         }
 
-        return $this->pubDirectory;
+	    return $this->mediaDirectory;
     }
 }
