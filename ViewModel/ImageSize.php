@@ -6,12 +6,23 @@ namespace Snowdog\CategoryAttributes\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
+use Magento\Catalog\Model\Category\FileInfo as CategoryFileInfo;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Directory\ReadInterface as DirectoryReadInterface;
 
 class ImageSize implements ArgumentInterface
 {
+    /**
+     * @var DirectoryReadInterface
+     */
+    private $baseDirectory;
+
+    /**
+     * @var DirectoryReadInterface
+     */
+    private $mediaDirectory;
+
     /**
      * @var DirectoryReadInterface
      */
@@ -24,14 +35,66 @@ class ImageSize implements ArgumentInterface
 
     public function get(CategoryInterface $category): ?array
     {
-        if (!$category->getImage() || !$this->getPubDirectory()->isReadable($category->getImage())) {
+        if (!$category->getImage()) {
             return null;
         }
 
-        $imagePath = $this->getPubDirectory()->getAbsolutePath($category->getImage());
+        $imagePath = $this->getImagePath($category->getImage());
         [$width, $height] = getimagesize($imagePath);
 
         return $width ? ['width' => $width, 'height' => $height] : null;
+    }
+
+    private function getImagePath(string $image): string
+    {
+        return $this->isBeginsWithMediaDirectoryPath($image)
+            ? $this->getPubDirectory()->getAbsolutePath($image)
+            : $this->getMediaDirectory()->getAbsolutePath(CategoryFileInfo::ENTITY_MEDIA_PATH . '/' . $image);
+    }
+
+    private function isBeginsWithMediaDirectoryPath(string $fileName): bool
+    {
+        $filePath = ltrim($fileName, '/');
+        $mediaDirectoryRelativeSubpath = $this->getMediaDirectoryPathRelativeToBaseDirectoryPath($filePath);
+
+        return strpos($filePath, $mediaDirectoryRelativeSubpath) === 0;
+    }
+
+    private function getMediaDirectoryPathRelativeToBaseDirectoryPath(string $filePath = ''): string
+    {
+        $baseDirectory = $this->getBaseDirectory();
+        $baseDirectoryPath = $baseDirectory->getAbsolutePath();
+        $mediaDirectoryPath = $this->getMediaDirectory()->getAbsolutePath();
+        $pubDirectoryPath = $this->getPubDirectory()->getAbsolutePath();
+
+        $mediaDirectoryRelativeSubpath = substr($mediaDirectoryPath, strlen($baseDirectoryPath));
+        $pubDirectory = $baseDirectory->getRelativePath($pubDirectoryPath);
+
+        if (strpos($mediaDirectoryRelativeSubpath, $pubDirectory) === 0
+            && strpos($filePath, $pubDirectory) !== 0
+        ) {
+            $mediaDirectoryRelativeSubpath = substr($mediaDirectoryRelativeSubpath, strlen($pubDirectory));
+        }
+
+        return $mediaDirectoryRelativeSubpath;
+    }
+
+    private function getBaseDirectory(): DirectoryReadInterface
+    {
+        if (!$this->baseDirectory) {
+            $this->baseDirectory = $this->filesystem->getDirectoryRead(DirectoryList::ROOT);
+        }
+
+        return $this->baseDirectory;
+    }
+
+    private function getMediaDirectory(): DirectoryReadInterface
+    {
+        if (!$this->mediaDirectory) {
+            $this->mediaDirectory = $this->filesystem->getDirectoryRead(DirectoryList::MEDIA);
+        }
+
+        return $this->mediaDirectory;
     }
 
     private function getPubDirectory(): DirectoryReadInterface
