@@ -35,21 +35,32 @@ class ImageSize implements ArgumentInterface
 
     public function get(CategoryInterface $category): ?array
     {
-        if (!$category->getImage()) {
+        $image = $this->getImagePath($category);
+        if (!$image) {
             return null;
         }
 
-        $imagePath = $this->getImagePath($category->getImage());
-        [$width, $height] = getimagesize($imagePath);
+        [$width, $height] = getimagesize($image);
 
         return $width ? ['width' => $width, 'height' => $height] : null;
     }
 
-    private function getImagePath(string $image): string
+    private function getImagePath(CategoryInterface $category): ?string
     {
-        return $this->isBeginsWithMediaDirectoryPath($image)
-            ? $this->getPubDirectory()->getAbsolutePath($image)
-            : $this->getMediaDirectory()->getAbsolutePath(CategoryFileInfo::ENTITY_MEDIA_PATH . '/' . $image);
+        $image = $category->getImage();
+        if (!$image) {
+            return null;
+        }
+
+        if ($this->isBeginsWithMediaDirectoryPath($image)) {
+            $pubDir = $this->getPubDirectory();
+            return $pubDir->isReadable($image) ? $pubDir->getAbsolutePath($image) : null;
+        }
+
+        $mediaDir = $this->getMediaDirectory();
+        $image = CategoryFileInfo::ENTITY_MEDIA_PATH . '/' . $image;
+
+        return $mediaDir->isReadable($image) ? $mediaDir->getAbsolutePath($image) : null;
     }
 
     private function isBeginsWithMediaDirectoryPath(string $fileName): bool
