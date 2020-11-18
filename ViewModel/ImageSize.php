@@ -14,6 +14,11 @@ use Magento\Framework\Filesystem\Directory\ReadInterface as DirectoryReadInterfa
 class ImageSize implements ArgumentInterface
 {
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * @var DirectoryReadInterface
      */
     private $baseDirectory;
