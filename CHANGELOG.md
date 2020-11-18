@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## [Unreleased]
+* Handled image name only file paths in image size view model
 
 ## [1.2.0] 2020-10-22
 * Enabled Magento `2.4` support in `composer.json`
