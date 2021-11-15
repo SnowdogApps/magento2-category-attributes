@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [1.4.0] 2021-11-15
+* [83784] Allow toggling tiny editor for Category Bottom Text attribute
+
 ## [1.3.0] 2020-11-18
 * Handled image name only file paths in image size view model
 
