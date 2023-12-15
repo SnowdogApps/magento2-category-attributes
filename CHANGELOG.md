@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.5.0] 2023-12-15
+* Added: is_html_allowed_on_front attribute option
+* Added: frontend layout and template
+
 ## [1.4.0] 2021-11-15
 * [83784] Allow toggling tiny editor for Category Bottom Text attribute
 
