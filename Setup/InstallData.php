@@ -53,7 +53,8 @@ class InstallData implements InstallDataInterface
                 'user_defined' => true,
                 'wysiwyg_enabled' => true,
                 'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
-                'group' => self::DEFAULT_ATTRIBUTE_GROUP_NAME
+                'group' => self::DEFAULT_ATTRIBUTE_GROUP_NAME,
+                'is_html_allowed_on_front' => true,
             ]
         );
     }
