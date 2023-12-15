@@ -1,0 +1,17 @@
+<?php
+/**
+ * Category view template
+ *
+ * @var $block \Magento\Catalog\Block\Category\View
+ */
+?>
+<?php $descriptionBottom = $block->getCurrentCategory()->getCategoryTextBottom(); ?>
+<?php if ($descriptionBottom): ?>
+    <div>
+        <?= /* @noEscape */ $this->helper(Magento\Catalog\Helper\Output::class)->categoryAttribute(
+            $block->getCurrentCategory(),
+            $descriptionBottom,
+            'category_text_bottom'
+        ) ?>
+    </div>
+<?php endif; ?>
